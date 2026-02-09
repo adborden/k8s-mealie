@@ -1,0 +1,46 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: mealie
+    app.kubernetes.io/component: app
+  name: mealie
+spec:
+  # Unclear if mealie supports multiple
+  # replicas without a RWM volume
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mealie
+      app.kubernetes.io/component: app
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mealie
+        app.kubernetes.io/component: app
+    spec:
+      containers:
+        - name: mealie
+          image: ghcr.io/mealie-recipes/mealie:v3.10.2
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: mealie
+          ports:
+            - name: http
+              containerPort: 9000
+          volumeMounts:
+            - mountPath: /app/data
+              name: storage
+          readinessProbe:
+            httpGet:
+              path: /api/app/about
+              port: 9000
+              scheme: HTTP
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: mealie
