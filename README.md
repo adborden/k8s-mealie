@@ -7,7 +7,7 @@ This project provides Kustomize resources for deploying [Mealie](https://mealie.
 Render the manifests with Kustomize and apply them to your cluster:
 
     kubectl create namespace mealie
-    kustomize build github.com/adborden/k8s-mealie.git//mealie | kubectl -n mealie apply -f -
+    kustomize build manifests | kubectl -n mealie apply -f -
 
 If you need to Kustomize the deployment, you can include this Kustomization in your own:
 
